@@ -1,0 +1,23 @@
+{
+  "name": "calabrioextensionproject",
+  "version": "1.0.0",
+  "main": "./src/popup.js",
+  "scripts": {
+    "dev:test": "jest --watchAll --verbose",
+    "dev:test-silent": "jest --watchAll --verbose --silent",
+    "test": "jest --watchAll=false --verbose",
+    "debug": "node --debug-brk --inspect ./node_modules/jest/bin/jest -i"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@babel/preset-env": "^7.29.0",
+    "jest": "^30.2.0"
+  },
+  "dependencies": {
+    "@types/jest": "^30.0.0",
+    "axios": "^1.13.6"
+  }
+}
