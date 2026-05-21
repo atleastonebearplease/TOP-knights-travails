@@ -24,45 +24,89 @@ class BoardPos {
     }
 }
 
-let board = [];
+class Board { 
+    constructor() {
+        this.board = [];
 
-for(let x = 0; x < BOARD_SIZE; x++) {
-    let row = [];
+        //Initialize
+        for(let x = 0; x < BOARD_SIZE; x++) {
+            let row = [];
 
-    for(let y = 0; y < BOARD_SIZE; y++) {
-        row.push(new BoardPos(x, y));
-    }
-
-    board.push(row);
-}
-
-function prettyPrint(board) {
-    let boardString = "";
-
-    let columnLabel = " ";
-
-    for(let i = 0; i < BOARD_SIZE; i++) {
-        columnLabel += `  ${i} `;
-    }
-
-    boardString += columnLabel + "\n";
-
-    for(let x = 0; x < BOARD_SIZE; x++) {
-
-        for(let y = 0; y < BOARD_SIZE; y++) {
-            if(y === 0) {
-                boardString += `${x} `;
+            for(let y = 0; y < BOARD_SIZE; y++) {
+                row.push(new BoardPos(x, y));
             }
 
-            let symbol = board[x][y].parent ? "V" : " ";
-
-            boardString += `[${symbol}] `;
+            board.push(row);
         }
-
-        boardString += "\n";
     }
 
-    console.log(boardString);
+    findShortestPath(pos1, pos2) {
+
+        
+
+        /* 
+            We need linked list for queue
+            Iniitalize move queue
+            if pos1 is valid
+                push it onto the queue
+            else
+                return undefined;
+
+            while queue is not empty
+                if(pos === pos2)
+                    We have found our path, unwind and create array of positions
+                    return the array
+                
+                Otherwise, continue. 
+                Go through each posssible move and validate
+                    Set the current pos as parent
+                    push it onto the queue
+
+
+        UNWIND:
+            Start at the correct move; grab it's parent, push to array, 
+            set current as next; repeat until parent is null
+        */
+    }
+
+    prettyPrint() {
+        let boardString = "";
+
+        let columnLabel = " ";
+
+        for(let i = 0; i < BOARD_SIZE; i++) {
+            columnLabel += `  ${i} `;
+        }
+
+        boardString += columnLabel + "\n";
+
+        for(let x = 0; x < BOARD_SIZE; x++) {
+
+            for(let y = 0; y < BOARD_SIZE; y++) {
+                if(y === 0) {
+                    boardString += `${x} `;
+                }
+
+                let symbol = board[x][y].parent ? "V" : " ";
+
+                boardString += `[${symbol}] `;
+            }
+
+            boardString += "\n";
+        }
+
+        console.log(boardString);
+    }
 }
 
-prettyPrint(board);
+let chessBoard = new Board();
+
+chessBoard.prettyPrint();
+
+
+
+/* 
+    So I think we should make a board class
+    It can contain the board, have the function to find the path, and can contain the print
+    function. Not sure if it needs anything else. Will have to add as I go. 
+*/
