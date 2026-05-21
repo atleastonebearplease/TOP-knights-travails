@@ -24,6 +24,10 @@ class BoardPos {
         this.y = y;
         this.parent = null;
     }
+
+    combine(pos2) {
+        return { x: this.x + pos2.x, y: this.y + pos2.y };
+    }
 }
 
 class Board { 
@@ -43,25 +47,38 @@ class Board {
     }
 
     findShortestPath(pos1, pos2) {
+        /*
+            NO we do need the board. Because we need to keep up with visited nodes! 
+            During the knight move set generation, we need to make sure that we haven't visited that node 
+            already!!
+            So then at the end we can clear the thing and revist each node that is in the shortest path
 
-        if(!isValidPos(pos1) || !isValidPos(pos2)) return undefined;
+        */
+
+        if(!this.#isValidPos(pos1) || !this.#isValidPos(pos2)) return undefined;
 
         let moveQ = new LinkedList();
 
         moveQ.push(this.board[pos1.x][pos1.y]);
 
-        // while(!moveQ.empty()) {
-        //     let curr = moveQ.pop();
+        while(!moveQ.empty()) {
+            let curr = moveQ.pop();
 
-        //     if(curr.x === pos2.x && curr.y = pos2.y) {
-        //         //TODO: let pathArr = Unwind(curr);
-        //         //return pathArr; //Or whatever we wanna do here
-        //     }
+            if(curr.x === pos2.x && curr.y === pos2.y) {
+                //TODO: let pathArr = Unwind(curr);
+                //return pathArr; //Or whatever we wanna do here
+                console.log("Path Found!");
+                return;
+            }
+           
+            let moveSet = this.#generateKnightMoveSet(curr);
 
-        //     /* 
-        //         Go through each possible move - 8 I believe
-        //     */
-        // }
+            for(let i = 0; i < moveSet.length; i++) {
+                let newMove = this.board[moveSet[i].x][moveSet[i].y];
+                newMove.parent = curr;
+                moveQ.push(newMove);
+            }
+        }
 
 
         /* 
@@ -90,10 +107,35 @@ class Board {
     }
 
     #isValidPos(pos) {
-        return pos.x > 0 ||
-               pos.x < BOARD_SIZE ||
-               pos.y > 0 || 
+        return pos.x >= 0 &&
+               pos.x < BOARD_SIZE &&
+               pos.y >= 0 && 
                pos.y < BOARD_SIZE;
+    }
+
+    #generateKnightMoveSet(currPos) {
+        let moveSet = [
+            {x: -1, y: -2},
+            {x: 1, y: -2},
+            {x: 2, y: -1},
+            {x: 2, y: 1},
+            {x: 1, y: 2},
+            {x: -1, y: 2},
+            {x: -2, y: 1},
+            {x: -2, y: -1}
+        ]
+
+        let possibleMoves = [];
+
+        for(let i = 0; i < 8; i++) {
+            let move = currPos.combine(moveSet[i]);
+
+            if(this.#isValidPos(move) && this.board[move.x][move.y].parent === null) {
+                possibleMoves.push(move);
+            }
+        }
+
+        return possibleMoves;
     }
 
     prettyPrint() {
@@ -129,6 +171,8 @@ class Board {
 let chessBoard = new Board();
 
 chessBoard.prettyPrint();
+
+chessBoard.findShortestPath({x: 0, y:0}, {x: 7, y: 7});
 
 
 

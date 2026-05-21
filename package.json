@@ -2,6 +2,7 @@
   "name": "calabrioextensionproject",
   "version": "1.0.0",
   "main": "./src/popup.js",
+  "type": "module",
   "scripts": {
     "dev:test": "jest --watchAll --verbose",
     "dev:test-silent": "jest --watchAll --verbose --silent",

@@ -71,6 +71,10 @@ export class LinkedList {
         return node.value;
     }
 
+    push(value) {
+        this.append(value);
+    }
+
     pop() {
         if(this.size() === 0) {
             return undefined;
