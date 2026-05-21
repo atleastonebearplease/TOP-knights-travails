@@ -23,10 +23,11 @@ class BoardPos {
         this.x = x;
         this.y = y;
         this.parent = null;
+        this.visited = false;
     }
 
-    combine(pos2) {
-        return { x: this.x + pos2.x, y: this.y + pos2.y };
+    combine(p2) {
+        return { x: this.x + p2.x, y: this.y + p2.y };
     }
 }
 
@@ -46,60 +47,53 @@ class Board {
         }
     }
 
-    findShortestPath(pos1, pos2) {
-        /*
-            NO we do need the board. Because we need to keep up with visited nodes! 
-            During the knight move set generation, we need to make sure that we haven't visited that node 
-            already!!
-            So then at the end we can clear the thing and revist each node that is in the shortest path
+    findShortestPath(p1, p2) {
+        this.#clearVisted();
+        this.#clearParents();
 
-        */
-
-        if(!this.#isValidPos(pos1) || !this.#isValidPos(pos2)) return undefined;
+        if(!this.#isValidPos(p1) || !this.#isValidPos(p2)) return undefined;
 
         let moveQ = new LinkedList();
 
-        moveQ.push(this.board[pos1.x][pos1.y]);
+        //Make sure we visit it so that it's not included in future move sets
+        this.board[p1.x][p1.y].visited = true;
+
+        moveQ.push(this.board[p1.x][p1.y]);
 
         while(!moveQ.empty()) {
             let curr = moveQ.pop();
 
-            if(curr.x === pos2.x && curr.y === pos2.y) {
-                //TODO: let pathArr = Unwind(curr);
-                //return pathArr; //Or whatever we wanna do here
+            if(curr.x === p2.x && curr.y === p2.y) {
                 console.log("Path Found!");
-                return;
+
+                let shortestPath = [];
+
+                let pathNode = curr;
+
+                while(pathNode.parent !== null) {
+                    shortestPath.push(pathNode);
+
+                    pathNode = pathNode.parent;
+                }
+
+                shortestPath.push(pathNode); //Push the starting point also
+
+                this.#setPathAsVisited(shortestPath);
+
+                return shortestPath.reverse();
             }
            
             let moveSet = this.#generateKnightMoveSet(curr);
 
             for(let i = 0; i < moveSet.length; i++) {
+                this.board[moveSet[i].x][moveSet[i].y].parent = curr;
+                this.board[moveSet[i].x][moveSet[i].y].visited = true;
                 let newMove = this.board[moveSet[i].x][moveSet[i].y];
-                newMove.parent = curr;
                 moveQ.push(newMove);
             }
         }
 
-
-        /* 
-            We need linked list for queue
-            Iniitalize move queue
-            if pos1 is valid
-                push it onto the queue
-            else
-                return undefined;
-
-            while queue is not empty
-                if(pos === pos2)
-                    We have found our path, unwind and create array of positions
-                    return the array
-                
-                Otherwise, continue. 
-                Go through each posssible move and validate
-                    Set the current pos as parent
-                    push it onto the queue
-
-
+        /*
         UNWIND:
             Start at the correct move; grab it's parent, push to array, 
             set current as next; repeat until parent is null
@@ -130,7 +124,7 @@ class Board {
         for(let i = 0; i < 8; i++) {
             let move = currPos.combine(moveSet[i]);
 
-            if(this.#isValidPos(move) && this.board[move.x][move.y].parent === null) {
+            if(this.#isValidPos(move) && this.board[move.x][move.y].visited === false) {
                 possibleMoves.push(move);
             }
         }
@@ -149,14 +143,14 @@ class Board {
 
         boardString += columnLabel + "\n";
 
-        for(let x = 0; x < BOARD_SIZE; x++) {
+        for(let y = 0; y < BOARD_SIZE; y++) {
 
-            for(let y = 0; y < BOARD_SIZE; y++) {
-                if(y === 0) {
-                    boardString += `${x} `;
+            for(let x = 0; x  < BOARD_SIZE; x++) {
+                if(x === 0) {
+                    boardString += `${y} `;
                 }
 
-                let symbol = this.board[x][y].parent ? "V" : " ";
+                let symbol = this.board[x][y].visited ? "V" : " ";
 
                 boardString += `[${symbol}] `;
             }
@@ -166,18 +160,40 @@ class Board {
 
         console.log(boardString);
     }
+
+    #setPathAsVisited(shortestPath) {
+        this.#clearVisted();
+
+        for(let i = 0; i < shortestPath.length; i++) {
+            let pathNode = shortestPath[i];
+            
+            this.board[pathNode.x][pathNode.y].visited = true;
+        }
+    }
+
+    #clearVisted() {
+        for(let y = 0; y < BOARD_SIZE; y++) {
+            for(let x = 0; x < BOARD_SIZE; x++) {
+                this.board[x][y].visited = false;
+            }
+        }
+    }
+
+    #clearParents() {
+        for(let y = 0; y < BOARD_SIZE; y++) {
+            for(let x = 0; x < BOARD_SIZE; x++) {
+                this.board[x][y].parent = null;
+            }
+        }
+    }
 }
 
 let chessBoard = new Board();
 
+let path = chessBoard.findShortestPath({x: 0, y:0}, {x: 2, y: 2});
+
+for(let i = 0; i < path.length; i++) {
+    console.log(`Move ${i}: (${path[i].x}, ${path[i].y})`);
+}
+
 chessBoard.prettyPrint();
-
-chessBoard.findShortestPath({x: 0, y:0}, {x: 7, y: 7});
-
-
-
-/* 
-    So I think we should make a board class
-    It can contain the board, have the function to find the path, and can contain the print
-    function. Not sure if it needs anything else. Will have to add as I go. 
-*/
