@@ -14,6 +14,8 @@ Starting at the first position, queue all possible moves.
     Refer to Codex stuff
 */
 
+import { LinkedList } from "./linkedList.js";
+
 const BOARD_SIZE = 8;
 
 class BoardPos {
@@ -36,13 +38,31 @@ class Board {
                 row.push(new BoardPos(x, y));
             }
 
-            board.push(row);
+            this.board.push(row);
         }
     }
 
     findShortestPath(pos1, pos2) {
 
-        
+        if(!isValidPos(pos1) || !isValidPos(pos2)) return undefined;
+
+        let moveQ = new LinkedList();
+
+        moveQ.push(this.board[pos1.x][pos1.y]);
+
+        // while(!moveQ.empty()) {
+        //     let curr = moveQ.pop();
+
+        //     if(curr.x === pos2.x && curr.y = pos2.y) {
+        //         //TODO: let pathArr = Unwind(curr);
+        //         //return pathArr; //Or whatever we wanna do here
+        //     }
+
+        //     /* 
+        //         Go through each possible move - 8 I believe
+        //     */
+        // }
+
 
         /* 
             We need linked list for queue
@@ -69,6 +89,13 @@ class Board {
         */
     }
 
+    #isValidPos(pos) {
+        return pos.x > 0 ||
+               pos.x < BOARD_SIZE ||
+               pos.y > 0 || 
+               pos.y < BOARD_SIZE;
+    }
+
     prettyPrint() {
         let boardString = "";
 
@@ -87,7 +114,7 @@ class Board {
                     boardString += `${x} `;
                 }
 
-                let symbol = board[x][y].parent ? "V" : " ";
+                let symbol = this.board[x][y].parent ? "V" : " ";
 
                 boardString += `[${symbol}] `;
             }

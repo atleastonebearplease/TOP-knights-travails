@@ -51,6 +51,10 @@ export class LinkedList {
         return this.length;
     }
 
+    empty() {
+        return this.length === 0;
+    }
+
     head() {
         return this.headNode.value;
     }
